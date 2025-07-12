@@ -1,0 +1,10 @@
+*.log
+*node_modules
+*.env
+*uploads
+*yarn.lock
+*.vs
+*.vscode
+*bin
+*obj
+*appsettings.json
