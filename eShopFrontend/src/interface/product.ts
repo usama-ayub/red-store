@@ -19,3 +19,18 @@ export interface IProductImage {
   main: boolean
   url: string
 }
+
+export interface ICProduct {
+  name: string
+  price: number
+  tags: string[]
+  fileInfo: ICProductImage[]
+  categoryId: string
+  subCategoryId: string
+  shopId: string
+}
+
+export interface ICProductImage {
+  main: boolean
+  file: File
+}

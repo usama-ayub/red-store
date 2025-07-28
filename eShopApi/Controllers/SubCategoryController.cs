@@ -31,7 +31,7 @@ namespace eShopApi.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetSubCategories([FromQuery] PaginationDto paginationParams)
+        public async Task<IActionResult> GetSubCategories([FromQuery] SubCategoryPaginationDto paginationParams)
         {
             var result = await _subCategoryService.Get(paginationParams);
             if (result.status)

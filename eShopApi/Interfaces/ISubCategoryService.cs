@@ -8,6 +8,6 @@ namespace eShopApi.Interfaces
     {
         Task<(bool status, string Message)> CreateAsync(CreateSubCategoryDto subcategory);
 
-        Task<(bool status, PaginationResult<ResponseSubCategory> subCategory)> Get(PaginationDto paginationParams);
+        Task<(bool status, PaginationResult<ResponseSubCategory> subCategory)> Get(SubCategoryPaginationDto paginationParams);
     }
 }

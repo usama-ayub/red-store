@@ -56,7 +56,7 @@ namespace eShopApi.Services
             return (true, "created successfully");
         }
 
-        public async Task<(bool status, PaginationResult<ResponseSubCategory> subCategory)> Get(PaginationDto paginationParams)
+        public async Task<(bool status, PaginationResult<ResponseSubCategory> subCategory)> Get(SubCategoryPaginationDto paginationParams)
         {
 
             var mongoFilter = Builders<SubCategory>.Filter.Empty;
@@ -95,10 +95,10 @@ var pipeline = new BsonDocument[]
             //    mongoFilter &= Builders<Product>.Filter.Regex(p => p.Name, new MongoDB.Bson.BsonRegularExpression(filter.Name, "i"));
             //}
 
-            //if (!string.IsNullOrEmpty(filter?.Category))
-            //{
-            //    mongoFilter &= Builders<Product>.Filter.Eq(p => p.Category, filter.Category);
-            //}
+            if (!string.IsNullOrEmpty(paginationParams.CategoryId))
+            {
+                mongoFilter &= Builders<SubCategory>.Filter.Eq(p => p.CategoryId, paginationParams.CategoryId);
+            }
 
             //if (filter?.MinPrice.HasValue == true)
             //{

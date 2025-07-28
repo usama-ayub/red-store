@@ -1,18 +1,36 @@
 <script setup lang="ts">
 import { ref } from 'vue';
 
+const props = defineProps<{
+  placeholder: string;
+  options: Array<any>;
+  disabled: boolean;
+  modelValue: string | number;
+  filter?: boolean;
+  multiSelection?:boolean;
+}>();
+
+const emit = defineEmits<{
+  (e: 'update:modelValue', value: number | string | Array<number | string>): void;
+  (e: 'onChange', value: number | string | Array<number | string>): void;
+}>();
+ 
+ const onChange = (event: Event)=>{
+   const selectedId = (event.target as HTMLSelectElement).value;
+     emit('onChange', selectedId);
+     emit('update:modelValue', selectedId);
+ }
 </script>
 
 <template>
 
-    <select>
-      <option>Default Sorting</option>
-      <option>Short by price</option>
-      <option>Short by popularity</option>
-      <option>Short by rating</option>
-      <option>Short by sale</option>
-    </select>
-    
+  <select v-model="props.modelValue" :disabled="props.disabled" @change="onChange($event)">
+    <option disabled value="">{{ props.placeholder }}</option>
+    <option v-for="option in props.options" :key="option.id" :value="option.id">
+      {{ option.name }}
+    </option>
+  </select>
+
 </template>
 
 <style scoped>

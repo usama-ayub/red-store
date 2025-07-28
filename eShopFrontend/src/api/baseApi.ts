@@ -30,9 +30,11 @@ api.interceptors.response.use(
     return response;
   },
   (error) => {
-    if (error.response && error.response.status === 401) {
-       const {data} = error
-      toast('success', data.message);
+    const { code, data, response, message } = error;
+    if (response && response.status === 401) {
+      toast('error', data.message);
+    } else if (code == 'ERR_NETWORK') {
+      toast('error', message);
     }
     return Promise.reject(error);
   }

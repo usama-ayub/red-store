@@ -7,6 +7,7 @@ const props = defineProps<{
   totalPages: number;
   modelValue: number; // current page
 }>();
+
 const emit = defineEmits<{
   (e: 'update:modelValue', value: number): void;
   (e: 'page-change', value: number): void;
@@ -16,7 +17,7 @@ const pages = computed(() => {
   return Array.from({ length: props.totalPages }, (_, i) => i + 1);
 });
 
-function changePage(page: number) {
+const changePage = (page: number) => {
   if (page >= 1 && page <= props.totalPages && page !== props.modelValue) {
     emit('update:modelValue', page);
     emit('page-change', page);

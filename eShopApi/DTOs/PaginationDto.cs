@@ -18,4 +18,10 @@ namespace eShopApi.DTOs
     {
         public string Name { get; set; } = "";
     }
+
+    public class SubCategoryPaginationDto : PaginationDto
+    {
+        public string CategoryId { get; set; } = "";
+        public string Name { get; set; } = "";
+    }
 }

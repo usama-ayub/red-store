@@ -34,7 +34,7 @@ onMounted(() => {
   <div class="small-container">
     <div class="row row-2">
       <h2>All Products</h2>
-      <DropDown />
+      <!-- <DropDown /> -->
     </div>
     <div class="row">
       <!-- products -->
