@@ -35,8 +35,16 @@ const emit = defineEmits<{
 
 <style scoped>
 select {
-  border: 1px solid #ff523b;
-  padding: 5px;
+  /* border: 1px solid #ff523b;
+  padding: 5px; */
+
+   display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    padding: 5px;
+    border: 1px solid #ff523b;
+    border-radius: 5px;
+    max-width: 400px;
 }
 
 select:focus {

@@ -33,4 +33,5 @@ export interface ICProduct {
 export interface ICProductImage {
   main: boolean
   file: File
+  url:string
 }

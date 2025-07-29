@@ -1,11 +1,13 @@
 <script setup lang="ts">
-import { onMounted, reactive, ref } from 'vue';
-import Header from './shared/Header.vue';
-import Pagination from './shared/Pagination.vue';
-import DropDown from './shared/DropDown.vue';
+import { computed, onMounted, reactive, ref } from 'vue';
 import api from '../api/baseApi';
+
+import Header from './shared/Header.vue';
+import DropDown from './shared/DropDown.vue';
+
 import type { ICProduct, IProduct } from '../interface/product';
 import type { ICategory } from '../interface/category';
+
 import TagsInput from './shared/TagsInput.vue';
 // import { useToast } from '../composables/useToast';
 
@@ -18,7 +20,7 @@ import TagsInput from './shared/TagsInput.vue';
 const shops = ref<any[]>([]);
 const categories = ref<ICategory[]>([]);
 const subCategories = ref<any[]>([]);
-const payload = reactive<ICProduct>({
+const form = reactive<ICProduct>({
     name: '',
     categoryId: '',
     price: 0,
@@ -28,9 +30,57 @@ const payload = reactive<ICProduct>({
     fileInfo: []
 });
 
-const handleLogin = async () => {
-    console.log(payload)
- };
+
+const handleImageUpload = (e: Event) => {
+    const target = e.target as HTMLInputElement
+    const files = target.files
+    if (!files) return
+
+    Array.from(files).forEach(file => {
+        const reader = new FileReader()
+        reader.onload = (event) => {
+            form.fileInfo.push({
+                file,
+                url: event.target?.result as string,
+                main: false,
+            })
+        }
+        reader.readAsDataURL(file)
+    })
+}
+
+// Set main image
+const setMainImage = (index: number) => {
+    form.fileInfo.forEach((_f)=>{
+             _f.main = false;
+    });
+    form.fileInfo[index].main = true;
+}
+
+// Remove image
+const removeImage = (index: number) => {
+    form.fileInfo.splice(index, 1)
+}
+
+// Submit form
+const submitForm = () => {
+    const formData = new FormData()
+    formData.append('name', form.name)
+    formData.append('categoryId', form.categoryId)
+    formData.append('subCategoryId', form.subCategoryId)
+    formData.append('shopId', form.shopId)
+    form.tags.forEach((tag,index)=>{
+        formData.append(`tags[${index}]`, tag)
+    })
+
+    form.fileInfo.forEach((value, index) => {
+       formData.append(`fileInfo[${index}].file`, value.file)
+       formData.append(`fileInfo[${index}].main`, `${value.main}`)
+    })
+
+    // Debug log (replace with axios or fetch)
+    console.log('Form submitted:', form);
+}
 
 const onCategoryChange = async (value: any) => {
     const selectedId = value;
@@ -40,26 +90,22 @@ const onCategoryChange = async (value: any) => {
 
 const getCategory = async () => {
     const { data } = await api.get('/Category');
-    console.log(data.data)
     categories.value = data.data.items;
-    console.log(categories)
 }
 
-const getSubCategory = async (id:string) => {
+const getSubCategory = async (id: string) => {
     const { data } = await api.get(`/SubCategory?categoryId=${id}`);
-    console.log(data.data)
     subCategories.value = data.data.items;
 }
 
 const getShop = async () => {
     const { data } = await api.get('/Shop');
-    console.log(data.data)
     shops.value = data.data.items;
 }
-const onTagChange = (value: string[]) => {
-    payload.tags = value
-    console.log(payload)
-}
+// const onTagChange = (value: string[]) => {
+//     form.tags = value
+//     console.log(form)
+// }
 onMounted(() => {
     getCategory();
     getShop();
@@ -70,32 +116,48 @@ onMounted(() => {
     <Header />
     <div class="small-container">
         <div class="row">
+            <form @submit.prevent="submitForm" class="form">
+                <!-- Title -->
+                 <div class="input-container">
+                     <input type="text" v-model="form.name" placeholder="Name" />
+                 </div>
 
-            <div class="col-4">
-                <form @submit.prevent="handleLogin">
-                    <div>
-                        <input v-model="payload.name" type="text" id="name" placeholder="name" />
-                        <!-- <p v-if="loginErrors.email" class="error">{{ loginErrors.email }}</p> -->
+                   <div class="input-container">
+                     <input type="number" v-model="form.price" placeholder="Price" min="1" />
+                 </div>
+
+                <div class="select-wrapper">
+                    <DropDown v-model="form.categoryId" :options="categories" :disabled="!categories.length" :placeholder="'Select Category'" @onChange="onCategoryChange($event)"/>
+                </div>
+
+                <div class="select-wrapper">
+                     <DropDown v-model="form.subCategoryId" :options="subCategories" :disabled="!subCategories.length" :placeholder="'Select SubCategory'"/>
+                </div>
+
+                <div class="select-wrapper">
+                   <DropDown v-model="form.shopId" :options="shops" :disabled="!shops.length" :placeholder="'Select Shop'"/>
+                </div>
+
+                <div class="select-wrapper">
+                      <TagsInput  v-model="form.tags"  />
+                </div>
+                <!-- File Upload -->
+                <input type="file" multiple accept="image/*" @change="handleImageUpload" />
+
+                <!-- Image Preview -->
+                <div class="image-preview-wrapper">
+                    <div v-for="(fileInfo, index) in form.fileInfo" :key="index" class="image-preview">
+                        <img :src="fileInfo.url" alt="Preview" />
+                        <label>
+                            <input type="checkbox" :checked="fileInfo.main" @change="setMainImage(index)" />
+                            Main
+                        </label>
+                        <button type="button" @click="removeImage(index)">Remove</button>
                     </div>
-                    <div>
-                         <DropDown v-model="payload.categoryId" :options="categories" :disabled="!categories.length" :placeholder="'Select Category'" @onChange="onCategoryChange($event)"/>
-                        <!-- <p v-if="loginErrors.password" class="error">{{ loginErrors.password }}</p> -->
-                    </div>
-                    <div>
-                        <DropDown v-model="payload.subCategoryId" :options="subCategories" :disabled="!subCategories.length" :placeholder="'Select SubCategory'"/>
-                        <!-- <p v-if="loginErrors.password" class="error">{{ loginErrors.password }}</p> -->
-                    </div>
-                    <div>
-                         <DropDown v-model="payload.shopId" :options="shops" :disabled="!shops.length" :placeholder="'Select Shop'"/>
-                        <!-- <p v-if="loginErrors.password" class="error">{{ loginErrors.password }}</p> -->
-                    </div>
-                    <div>
-                         <TagsInput  v-model="payload.tags"  />
-                        <!-- <p v-if="loginErrors.password" class="error">{{ loginErrors.password }}</p> -->
-                    </div>
-                    <button type="submit" class="btn">Login</button>
-                </form>
-            </div>
+                </div>
+
+                <button type="submit" class="btn">Submit</button>
+            </form>
 
         </div>
 
@@ -103,4 +165,79 @@ onMounted(() => {
 
 </template>
 
-<style scoped></style>
+<style scoped>
+.form {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    max-width: 600px;
+    margin: auto;
+}
+
+.input-container {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    padding: 5px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    max-width: 400px;
+}
+
+.input-container input {
+    border: none;
+    flex: 1;
+    padding: 5px;
+    min-width: 100px;
+    outline: none;
+}
+
+.select-wrapper {
+    display: flex;
+    flex-direction: column;
+}
+
+.image-preview-wrapper {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-top: 10px;
+}
+
+.image-preview {
+    width: 150px;
+    border: 1px solid #ccc;
+    padding: 10px;
+    text-align: center;
+}
+
+.image-preview img {
+    max-width: 100%;
+    height: auto;
+}
+
+.image-preview label {
+    display: block;
+    margin-top: 5px;
+}
+
+.image-preview button {
+    margin-top: 5px;
+    background-color: #f44336;
+    color: white;
+    border: none;
+    padding: 5px;
+    cursor: pointer;
+}
+
+form .btn {
+  width: 100%;
+  border: none;
+  cursor: pointer;
+  margin: 10px 0;
+}
+
+form .btn:focus {
+  outline: none;
+}
+</style>
