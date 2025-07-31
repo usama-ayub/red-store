@@ -7,6 +7,10 @@ import Cart from '../components/Cart.vue';
 import { useAuthStore } from '../store/auth';
 import Shop from '../components/Shop.vue';
 import CreateProduct from '../components/CreateProduct.vue';
+import CreateCategory from '../components/CreateCategory.vue';
+import CreateSubCategory from '../components/CreateSubCategory.vue';
+import CreateShop from '../components/CreateShop.vue';
+import ShopDetail from '../components/ShopDetail.vue';
 
 const routes = [ 
    { path: '/',component: Main},
@@ -14,9 +18,12 @@ const routes = [
   { path: '/products', component: Product },
   { path: '/shops', component: Shop },
   { path: '/cart', component: Cart },
-  // { path: '/product/:id', component: ProductDetail,  meta: { requiresAuth: true } },
   { path: '/create-product', component: CreateProduct,  meta: { requiresAuth: true } },
+  { path: '/create-category', component: CreateCategory,  meta: { requiresAuth: true } },
+  { path: '/create-subcategory', component: CreateSubCategory,  meta: { requiresAuth: true } },
+  { path: '/create-shop', component: CreateShop,  meta: { requiresAuth: true } },
   { path: '/product/:id', component: ProductDetail },
+  { path: '/shop/:id', component: ShopDetail },
   { path: '/:pathMatch(.*)*', redirect: '/' }
 ];
 

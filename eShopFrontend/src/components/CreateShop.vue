@@ -5,21 +5,20 @@ import api from '../api/baseApi';
 import Header from './shared/Header.vue';
 import DropDown from './shared/DropDown.vue';
 import TagsInput from './shared/TagsInput.vue';
+import type { ICShop } from '../interface/shop';
 
-import type { ICProduct } from '../interface/product';
-import type { ICategory } from '../interface/category';
 
 
 const shops = ref<any[]>([]);
-const categories = ref<ICategory[]>([]);
+// const categories = ref<ICategory[]>([]);
 const subCategories = ref<any[]>([]);
-const form = reactive<ICProduct>({
+const form = reactive<ICShop>({
     name: '',
-    categoryId: '',
-    price: 0,
-    subCategoryId: '',
-    shopId: '',
-    tags: [],
+    address: '',
+    contactNumber: '',
+    longtitude: 0,
+    latitude: 0,
+    website: '',
     fileInfo: []
 });
 
@@ -56,59 +55,34 @@ const removeImage = (index: number) => {
 const submitForm = async () => {
     const formData = new FormData()
     formData.append('Name', form.name)
-    formData.append('CategoryId', form.categoryId)
-    formData.append('SubCategoryId', form.subCategoryId)
-    formData.append('ShopId', form.shopId)
-    formData.append('Price', `${form.price}`)
-    form.tags.forEach((tag,index)=>{
-        formData.append(`Tags[${index}]`, tag)
-    });
-    form.fileInfo.forEach((value, index) => {
+    formData.append('Address', form.address)
+    formData.append('ContactNumber', form.contactNumber)
+    formData.append('Website', form.website)
+    formData.append('latitude', `${form.latitude}`)
+    formData.append('longtitude', `${form.longtitude}`)
+
+    form.fileInfo.forEach((value:any, index:number) => {
        formData.append(`FileInfo[${index}].file`, value.file)
        formData.append(`FileInfo[${index}].main`, `${value.main}`)
     });
-    const data = await api.post('/Product',formData);
+    const data = await api.post('/Shop',formData);
     console.log('Form submitted:', data);
     reset();
 }
 
 const reset = () => {
-    form.categoryId = "";
-    form.subCategoryId = "";
-    form.shopId = "";
+    form.address = "";
     form.name = "";
-    form.tags = [];
-    form.price = 1;
+    form.contactNumber = "";
+    form.website = "";
+    form.latitude = 0;
+    form.longtitude = 0;
     form.fileInfo = [];
 }
 
-const onCategoryChange = async (value: any) => {
-    const selectedId = value;
-    console.log('Selected Category Object:', value);
-    getSubCategory(selectedId);
-};
 
-const getCategory = async () => {
-    const { data } = await api.get('/Category');
-    categories.value = data.data.items;
-}
-
-const getSubCategory = async (id: string) => {
-    const { data } = await api.get(`/SubCategory?categoryId=${id}`);
-    subCategories.value = data.data.items;
-}
-
-const getShop = async () => {
-    const { data } = await api.get('/Shop');
-    shops.value = data.data.items;
-}
-// const onTagChange = (value: string[]) => {
-//     form.tags = value
-//     console.log(form)
-// }
 onMounted(() => {
-    getCategory();
-    getShop();
+  
 })
 </script>
 
@@ -122,25 +96,25 @@ onMounted(() => {
                      <input type="text" v-model="form.name" placeholder="Name" />
                  </div>
 
-                   <div class="input-container">
-                     <input type="number" v-model="form.price" placeholder="Price" min="1" />
+                 <div class="input-container">
+                     <input type="text" v-model="form.address" placeholder="Address" />
                  </div>
 
-                <div class="select-wrapper">
-                    <DropDown v-model="form.categoryId" :options="categories" :disabled="!categories.length" :placeholder="'Select Category'" @onChange="onCategoryChange($event)"/>
-                </div>
+                 <div class="input-container">
+                     <input type="text" v-model="form.website" placeholder="Website" />
+                 </div>
 
-                <div class="select-wrapper">
-                     <DropDown v-model="form.subCategoryId" :options="subCategories" :disabled="!subCategories.length" :placeholder="'Select SubCategory'"/>
-                </div>
+                 <div class="input-container">
+                     <input type="text" v-model="form.contactNumber" placeholder="Contact Number" />
+                 </div>
 
-                <div class="select-wrapper">
-                   <DropDown v-model="form.shopId" :options="shops" :disabled="!shops.length" :placeholder="'Select Shop'"/>
-                </div>
+                   <div class="input-container">
+                     <input type="" v-model="form.latitude" placeholder="latitude" step="0.00001" min="0" max="100000"/>
+                 </div>
 
-                <div class="select-wrapper">
-                      <TagsInput  v-model="form.tags"  />
-                </div>
+                  <div class="input-container">
+                     <input type="number" v-model="form.longtitude" placeholder="longtitude" step="0.00001" min="0" max="100000" />
+                 </div>
                 <!-- File Upload -->
                 <input type="file" multiple accept="image/*" @change="handleImageUpload" />
 
