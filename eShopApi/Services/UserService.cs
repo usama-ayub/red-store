@@ -15,15 +15,18 @@ namespace eShopApi.Services
         private readonly IMongoCollection<User> _userCollection;
        private readonly ITokenService _tokenService;
         private readonly IMapper _mapper;
+        private readonly IEmailService _emailService;
         public UserService(
             IDBConnection dbconnection,
             ITokenService tokenService,
-            IMapper mapper
+            IMapper mapper,
+            IEmailService emailService
             )
         {
             _tokenService = tokenService;
             _userCollection = dbconnection.DataBase.GetCollection<User>("User");
             _mapper = mapper;
+            _emailService = emailService;
         }
 
 
@@ -72,6 +75,22 @@ namespace eShopApi.Services
             user.PasswordSalt = hmac.Key;
             user.Email = payload.Email;
             await _userCollection.InsertOneAsync(user);
+            string htmlTemplate = await File.ReadAllTextAsync("EmailTemplates/WelcomeEmail.html");
+
+            htmlTemplate = htmlTemplate
+                .Replace("{{UserName}}", user.UserName)
+                .Replace("{{LoginUrl}}", "https://yourapp.com/login"); // Update with real link
+
+            try
+            {
+                await _emailService.SendEmailAsync(user.Email, "Welcome! To RedStore", htmlTemplate);
+            }
+            catch (Exception ex)
+            {
+                Console.Write(ex.Message);
+                //_logger.LogError("Email sending failed: " + ex.Message);
+                // Do not return failure — user is still registered
+            }
             return (true, "Register Sucessfully", new ResponseRegister
             {
                 UserName = user.UserName,

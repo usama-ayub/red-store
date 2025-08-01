@@ -26,6 +26,7 @@ builder.Services.AddSingleton<DataBaseSetting>(x => x.GetRequiredService<IOption
 builder.Services.AddSingleton<IDBConnection, DBConnection>();
 builder.Services.AddScoped<ITokenService, TokenService>();
 builder.Services.AddSingleton<IMediaService, MediaService>();
+builder.Services.AddScoped<IEmailService, EmailService>();
 
 builder.Services.AddScoped<IUserService,UserService>();
 builder.Services.AddScoped<ICategoryService,CategoryService>();
