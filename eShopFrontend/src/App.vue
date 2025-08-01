@@ -3,6 +3,7 @@ import { onMounted } from 'vue';
 import Footer from './components/shared/Footer.vue';
 import { useAuthStore } from './store/auth';
 import { useAppStore } from './store/app';
+import Loader from './components/shared/Loader.vue';
 
 const appStore = useAppStore();
 const authStore = useAuthStore();
@@ -15,6 +16,7 @@ onMounted(() => {
 </script>
 
 <template>
+  <Loader />
   <router-view />
   <Footer />
 </template>

@@ -98,6 +98,11 @@ const getSubCategory = async (id: string) => {
     subCategories.value = data.data.items;
 }
 
+// api.get('/some-endpoint', {
+//   headers: {
+//     'x-disable-loader': 'true',
+//   },
+// });
 const getShop = async () => {
     const { data } = await api.get('/Shop');
     shops.value = data.data.items;
