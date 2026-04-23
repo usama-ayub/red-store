@@ -9,3 +9,7 @@
 - Pina
 - Html
 - CSS
+
+# Mobile App:
+- Flutter
+- Flutter Riverpod

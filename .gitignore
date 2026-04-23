@@ -8,3 +8,7 @@
 *bin
 *obj
 *appsettings.json
+*.dart_tool
+*.packages
+*.pub
+*build
